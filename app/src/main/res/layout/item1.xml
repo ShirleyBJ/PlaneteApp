@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:verticalScrollbarPosition="right">
+
+    <TextView
+        android:id="@+id/planete_nom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#020202"
+        android:fontFamily="sans-serif-black"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="TextView"
+        android:textColor="#FFEB3B"
+        android:textColorHighlight="@color/teal_700"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
+</LinearLayout>
