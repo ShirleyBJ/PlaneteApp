@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -67,8 +70,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
         //séparateur
         DividerItemDecoration did = new DividerItemDecoration(rv.getContext(), llm.getOrientation());
         rv.addItemDecoration(did);
-
-
+        adapter.setMenuListener(this);
         rv.setAdapter(adapter);
     }
 
@@ -92,11 +94,37 @@ public class RecyclerViewActivity extends AppCompatActivity {
             case R.id.menu_creer:
                 //afficher le formulaire de création de planete
                 Log.d(TAG, "dans menu_creer");
+                Toast.makeText(this,"dans menu_creer",Toast.LENGTH_LONG).show();
                 //créer un Intent explicite
 
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId(); // recupere id de l'item qui vient d'être activé
+        switch (itemId){
+            case R.id.menu_modifier:
+                //afficher le formulaire de modification de planete
+                Log.d(TAG, "dans menu_modifier");
+                Toast.makeText(this,"dans menu_modifier",Toast.LENGTH_LONG).show();
+                return false;
+            case R.id.menu_supprimer:
+                //demander la confirmation avant de supprimer
+                Log.d(TAG, "dans menu_supprimer");
+                Toast.makeText(this,"dans menu_supprimer",Toast.LENGTH_LONG).show();
+                return false;
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 }
