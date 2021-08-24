@@ -1,5 +1,6 @@
 package fr.greta60.planeteappgreta60;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -8,6 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -17,6 +22,7 @@ import fr.greta60.planeteappgreta60.adapter.RecyclerPlaneteAdapter;
 import fr.greta60.planeteappgreta60.model.Planete;
 
 public class RecyclerViewActivity extends AppCompatActivity {
+    public static final String TAG = "RecyclerViewActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,5 +70,33 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
 
         rv.setAdapter(adapter);
+    }
+
+   //affichage du menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    /**
+     * création du menu
+     * @param menu
+     * @return true
+     * */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId(); //retourne id de l'item sélectionné
+        switch (itemId) {
+            case R.id.menu_creer:
+                //afficher le formulaire de création de planete
+                Log.d(TAG, "dans menu_creer");
+                //créer un Intent explicite
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

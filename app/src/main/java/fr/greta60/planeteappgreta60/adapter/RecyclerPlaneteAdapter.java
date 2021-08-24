@@ -70,7 +70,9 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
                 return false;
             }
         });
+        //verifie que element cliqué est celui afficher si c'est le cas backgd est gris autrement il n'y en a pas
         holder.itemView.setBackgroundColor(getClickedPosition() == position ? Color.LTGRAY : Color.TRANSPARENT);
+        //ajoute un menu contextuel sur chaque element de la liste
         holder.itemView.setOnCreateContextMenuListener(menuListener);
     }
 
