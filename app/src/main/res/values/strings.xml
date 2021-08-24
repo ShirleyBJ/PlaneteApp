@@ -3,4 +3,7 @@
     <string name="menu_creer">Créer planète</string>
     <string name="menu_modifier">Modifier planète</string>
     <string name="menu_supprimer">Supprimer planète</string>
+    <string name="form_npt_nom_planete">Nom de la planète</string>
+    <string name="form_npt_distance_planete">Distance de la planéte</string>
+    <string name="btn_submit_planete">Créer une planéte</string>
 </resources>

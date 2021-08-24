@@ -10,9 +10,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PlaneteAppGreta60">
         <activity
+            android:name=".CreerPlaneteActivity"
+            android:exported="true"
+            android:label="Créer Planète">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
             android:name=".RecyclerViewActivity"
-            android:label="Recycler View"
-            android:exported="true">
+            android:exported="true"
+            android:label="Recycler View">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,8 +31,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="List View"
-            android:exported="true">
+            android:exported="true"
+            android:label="List View">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

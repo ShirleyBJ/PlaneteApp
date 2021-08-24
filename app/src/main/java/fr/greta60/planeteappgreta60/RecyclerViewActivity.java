@@ -1,12 +1,14 @@
 package fr.greta60.planeteappgreta60;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +28,7 @@ import fr.greta60.planeteappgreta60.model.Planete;
 
 public class RecyclerViewActivity extends AppCompatActivity {
     public static final String TAG = "RecyclerViewActivity";
-
+    private RecyclerPlaneteAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +58,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
             list.add(p);
         }
 
-        RecyclerPlaneteAdapter adapter =
-                new RecyclerPlaneteAdapter(list);
+        adapter = new RecyclerPlaneteAdapter(list);
         //associer adaptateur à ListView
         RecyclerView rv = (RecyclerView)findViewById(R.id.list);
         //Disposition des elements ...
@@ -84,7 +85,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     /**
      * création du menu
-     * @param menu
+//     * @param menu
      * @return true
      * */
     @Override
@@ -96,10 +97,23 @@ public class RecyclerViewActivity extends AppCompatActivity {
                 Log.d(TAG, "dans menu_creer");
                 Toast.makeText(this,"dans menu_creer",Toast.LENGTH_LONG).show();
                 //créer un Intent explicite
-
+                Intent i = new Intent(this, CreerPlaneteActivity.class);
+                startActivityForResult(i, R.id.menu_creer);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == R.id.menu_creer && resultCode == RESULT_OK && null != data){
+            //récupérer les données envoyées par CreerPlaneteActivity
+            final String nomPlanete = data.getStringExtra("nomPlanete");
+            final int distancePlanete = data.getIntExtra("distancePlanete", 0);
+            Planete planete = new Planete(nomPlanete, distancePlanete, R.drawable.earth);
+            adapter.addPlanete(planete);
         }
     }
 
@@ -122,6 +136,9 @@ public class RecyclerViewActivity extends AppCompatActivity {
                 //demander la confirmation avant de supprimer
                 Log.d(TAG, "dans menu_supprimer");
                 Toast.makeText(this,"dans menu_supprimer",Toast.LENGTH_LONG).show();
+                //récupere la position de l'element qui a étè cliqué
+                int position = adapter.getClickedPosition();
+                adapter.removePlanete(position); //position de l'element à supprimer
                 return false;
             default:
                 return super.onContextItemSelected(item);

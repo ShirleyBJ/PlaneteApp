@@ -101,4 +101,16 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
     public void setMenuListener(View.OnCreateContextMenuListener menuListener) {
         this.menuListener = menuListener;
     }
+
+    public void addPlanete(Planete planete) {
+        list.add(planete);
+        //envoie de notification d'ajout de la position de l'élèment qui vient d'être ajouté
+        notifyItemInserted(list.size()-1); //nbr d'element de liste - celui qui vient d'être ajouté (-1)
+    }
+
+    public void removePlanete(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+        notifyDataSetChanged(); //liste qui contient les données -> notifie que ctete liste a subi des modifications
+    }
 }
