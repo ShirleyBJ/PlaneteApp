@@ -11,9 +11,17 @@
         android:theme="@style/Theme.PlaneteAppGreta60">
         <activity
             android:name=".RecyclerViewActivity"
-            android:exported="true" />
+            android:label="Recycler View"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
+            android:label="List View"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

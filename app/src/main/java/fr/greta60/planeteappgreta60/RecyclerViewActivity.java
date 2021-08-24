@@ -1,6 +1,8 @@
 package fr.greta60.planeteappgreta60;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.res.Resources;
@@ -18,7 +20,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_recycler_view);
 
         Resources resources = getResources();
         String[] nomsTab = resources.getStringArray(R.array.noms); //type et nom du tab dans arrays.xml
@@ -44,10 +46,18 @@ public class RecyclerViewActivity extends AppCompatActivity {
             list.add(p);
         }
 
-        //créer PlaneteAdapter
-        RecyclerPlaneteAdapter adapter= new RecyclerPlaneteAdapter(list);
-        //associer adapter à Recycler View
-        RecyclerView rv = findViewById(R.id.list);
+        RecyclerPlaneteAdapter adapter =
+                new RecyclerPlaneteAdapter(list);
+        //associer adaptateur à ListView
+        RecyclerView rv = (RecyclerView)findViewById(R.id.list);
+        LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        rv.setLayoutManager(llm);//gestionnaire de mise en forme
+        rv.setHasFixedSize(true);
+        //séparateur
+        DividerItemDecoration did = new DividerItemDecoration(rv.getContext(), llm.getOrientation());
+        rv.addItemDecoration(did);
+
+
         rv.setAdapter(adapter);
     }
 }
