@@ -2,6 +2,7 @@ package fr.greta60.planeteappgreta60;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,7 +51,11 @@ public class RecyclerViewActivity extends AppCompatActivity {
                 new RecyclerPlaneteAdapter(list);
         //associer adaptateur à ListView
         RecyclerView rv = (RecyclerView)findViewById(R.id.list);
+        //Disposition des elements ...
+        //créer gestionnaire de layout
         LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        //... basé sur grille
+//        GridLayoutManager llm = new GridLayoutManager(this,2);
         rv.setLayoutManager(llm);//gestionnaire de mise en forme
         rv.setHasFixedSize(true);
         //séparateur

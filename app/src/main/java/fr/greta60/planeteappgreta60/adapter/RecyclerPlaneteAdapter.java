@@ -1,5 +1,6 @@
 package fr.greta60.planeteappgreta60.adapter;
 
+import android.graphics.Color;
 import android.media.metrics.PlaybackErrorEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,10 @@ import fr.greta60.planeteappgreta60.view.RecyclerPlaneteView;
 public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlaneteView> {
     //variable pour stocker la liste des planetes
     private List<Planete> list;
+    //pour stocker la position d'élément cliqué
+    private int clickedPosition = RecyclerView.NO_POSITION;
+    //écouteur pour crée le menu contextuel
+    private View.OnCreateContextMenuListener menuListener;
     //constructeur pour initialiser la liste des planetes => list
     public RecyclerPlaneteAdapter(@NonNull List<Planete> planetes){
         super();
@@ -43,11 +48,30 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
 
     //méthode qui ajoute les données -> associe vue et données
     @Override
-    public void onBindViewHolder(@NonNull RecyclerPlaneteView holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerPlaneteView holder,final int position) {
         Planete p = list.get(position);
         holder.setItem(p);
-        //same code in 1 line
-        holder.setItem(list.get(position));
+        /**
+         * SAME CODE IN 1 LINE :
+         * holder.setItem(list.get(position));
+         * */
+        //ajouter un écouteur d'évènement sur chaque élément de la liste
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setClickedPosition(position);
+            }
+        });
+        //holder.itemView.setOnClickListener((view)->setClickedPosition(position));//expression Lambda
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View view) {
+                setClickedPosition(position);
+                return false;
+            }
+        });
+        holder.itemView.setBackgroundColor(getClickedPosition() == position ? Color.LTGRAY : Color.TRANSPARENT);
+        holder.itemView.setOnCreateContextMenuListener(menuListener);
     }
 
     /**
@@ -56,5 +80,23 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
     @Override
     public int getItemCount() {
         return list.size(); // methode size donne le nbr d'element de la liste
+    }
+
+    public int getClickedPosition() {
+        return clickedPosition;
+    }
+
+    public void setClickedPosition(int clickedPosition) {
+        notifyItemChanged(this.clickedPosition);
+        this.clickedPosition = clickedPosition;
+        notifyItemChanged(clickedPosition);
+    }
+
+    public View.OnCreateContextMenuListener getMenuListener() {
+        return menuListener;
+    }
+
+    public void setMenuListener(View.OnCreateContextMenuListener menuListener) {
+        this.menuListener = menuListener;
     }
 }
