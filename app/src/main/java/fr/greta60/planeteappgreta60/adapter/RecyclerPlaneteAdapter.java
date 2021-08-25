@@ -111,6 +111,6 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
     public void removePlanete(int position) {
         list.remove(position);
         notifyItemRemoved(position);
-        notifyDataSetChanged(); //liste qui contient les données -> notifie que ctete liste a subi des modifications
+        notifyDataSetChanged(); //liste qui contient les données -> notifie que cette liste a subi des modifications
     }
 }
