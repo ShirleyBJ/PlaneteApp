@@ -1,12 +1,12 @@
 package fr.greta60.planeteappgreta60.adapter;
 
 import android.graphics.Color;
-import android.media.metrics.PlaybackErrorEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -14,47 +14,41 @@ import java.util.List;
 import fr.greta60.planeteappgreta60.R;
 import fr.greta60.planeteappgreta60.model.Planete;
 import fr.greta60.planeteappgreta60.view.RecyclerPlaneteView;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 /**
- *  classe de type RecyclerView.adapter<RecyclerViewPlaneteView>
- *  class Adapter = abstract classe -> méthode abstraite doivent être implémenter
-* */
-public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlaneteView> {
-    //variable pour stocker la liste des planetes
-    private List<Planete> list;
+ * une classe de type RecyclerView.Adapter<RecyclerPlaneteView> */
+public class RecyclerPlaneteAdapter
+        extends RealmRecyclerViewAdapter<Planete, RecyclerPlaneteView> {
+
     //pour stocker la position d'élément cliqué
     private int clickedPosition = RecyclerView.NO_POSITION;
-    //écouteur pour crée le menu contextuel
+    //écouter pour créer le menu contextuel
     private View.OnCreateContextMenuListener menuListener;
+
     //constructeur pour initialiser la liste des planetes => list
-    public RecyclerPlaneteAdapter(@NonNull List<Planete> planetes){
-        super();
-        list = planetes;
+    public RecyclerPlaneteAdapter(@Nullable RealmResults<Planete> planetes) {
+        super(planetes, true);
     }
 
-    /**
-     * Méthode qui contient la vue
-     * Ne peut pas retourner  null sinon ne compile pas le code
-     * */
     @NonNull
     @Override
     public RecyclerPlaneteView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // objet qui permet d'expanser (transformer) une ressource(xml,png) en objet java
+        //objet qui permet de transformer une ressource (xml, png) en objet java
         LayoutInflater li = LayoutInflater.from(parent.getContext());
-        //création d'objet de type View (arg 1 : fichier XML, arg 2: parent( recyclerView))
+        //création d'objet de type View
         View view = li.inflate(R.layout.recycler_item, parent, false);
-        return new RecyclerPlaneteView(view); //appel du constructeur de la classe pour creer objet de type RecyclerPlaneteView
+        //création d'un objet de type RecyclerView.ViewHolder
+        // => objet contenant la vue
+        return new RecyclerPlaneteView(view);
     }
 
-    //méthode qui ajoute les données -> associe vue et données
     @Override
-    public void onBindViewHolder(@NonNull RecyclerPlaneteView holder,final int position) {
-        Planete p = list.get(position);
+    public void onBindViewHolder(@NonNull RecyclerPlaneteView holder,
+                                 final int position) {
+        Planete p = getItem(position);
         holder.setItem(p);
-        /**
-         * SAME CODE IN 1 LINE :
-         * holder.setItem(list.get(position));
-         * */
         //ajouter un écouteur d'évènement sur chaque élément de la liste
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,18 +64,15 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
                 return false;
             }
         });
-        //verifie que element cliqué est celui afficher si c'est le cas backgd est gris autrement il n'y en a pas
+        /*int color = Color.TRANSPARENT;
+        if (getClickedPosition() == position){
+            color = Color.LTGRAY;
+        }
+        holder.itemView.setBackgroundColor(color);*/
         holder.itemView.setBackgroundColor(getClickedPosition() == position ? Color.LTGRAY : Color.TRANSPARENT);
-        //ajoute un menu contextuel sur chaque element de la liste
+        //ajout d'un écouteur d'évènement de type "CreateContextMenu"
+        // sur chaque élémént de la liste
         holder.itemView.setOnCreateContextMenuListener(menuListener);
-    }
-
-    /**
-     * Methode qui indique le nbr d'element contenu dans la liste
-     * Compte nbr element de la variable list*/
-    @Override
-    public int getItemCount() {
-        return list.size(); // methode size donne le nbr d'element de la liste
     }
 
     public int getClickedPosition() {
@@ -103,14 +94,22 @@ public class RecyclerPlaneteAdapter extends RecyclerView.Adapter<RecyclerPlanete
     }
 
     public void addPlanete(Planete planete) {
-        list.add(planete);
-        //envoie de notification d'ajout de la position de l'élèment qui vient d'être ajouté
-        notifyItemInserted(list.size()-1); //nbr d'element de liste - celui qui vient d'être ajouté (-1)
+        //list.add(planete);
+        //envoie de notification d'ajout d'un élément
+        // avec la position d'élément qui vient d'être ajouté
+        //notifyItemInserted(list.size()-1);
     }
 
     public void removePlanete(int position) {
-        list.remove(position);
+        //list.remove(position);
         notifyItemRemoved(position);
-        notifyDataSetChanged(); //liste qui contient les données -> notifie que cette liste a subi des modifications
+        notifyDataSetChanged();
     }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return getItem(position).getId();
+    }
+
 }

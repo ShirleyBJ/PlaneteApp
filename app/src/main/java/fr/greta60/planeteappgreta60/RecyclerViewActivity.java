@@ -1,15 +1,6 @@
 package fr.greta60.planeteappgreta60;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -17,29 +8,45 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import fr.greta60.planeteappgreta60.adapter.PlaneteAdapter;
 import fr.greta60.planeteappgreta60.adapter.RecyclerPlaneteAdapter;
 import fr.greta60.planeteappgreta60.model.Planete;
+//import fr.greta60.planeteappgreta60.model.PlaneteFields;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class RecyclerViewActivity extends AppCompatActivity {
     public static final String TAG = "RecyclerViewActivity";
+    private Realm realm;
+    int[] idImages;
+
     private RecyclerPlaneteAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycler_view);
+        //récuperer une instance de la connection Realm (Singleton)
 
-        Resources resources = getResources();
-        String[] nomsTab = resources.getStringArray(R.array.noms); //type et nom du tab dans arrays.xml
-        int[] distancesTab = resources.getIntArray(R.array.distances); //type et nom du tab dans arrays.xml
+        realm = Realm.getDefaultInstance();
+        //envoyer une requete pour récuperer les planetes stockées dans SGBD
+        RealmResults<Planete> results = realm
+                .where(Planete.class)
+                .findAll();
+//        Resources resources = getResources();
+//        String[] nomsTab = resources.getStringArray(R.array.noms);
+//        int[] distancesTab = resources.getIntArray(R.array.distances);
+//
 
-        //créer un tableau des ressources images
-        int[] idImages = new int[]{
+//        //créer un tableau des ressources images
+        idImages = new int[]{
                 R.drawable.mercury,
                 R.drawable.venus,
                 R.drawable.earth,
@@ -50,22 +57,24 @@ public class RecyclerViewActivity extends AppCompatActivity {
                 R.drawable.neptune,
                 R.drawable.pluto
         };
-        //créer la liste des planètes
-        ArrayList<Planete> list = new ArrayList<>(); //créer une liste vide qui contient objet type planete
-        //avec boucle for, on ajoute les elements dans cette liste ->exécution du code 9 fois car 9 planete
-        for (int i = 0; i < nomsTab.length ; i++){
-            Planete p = new Planete(nomsTab[i], distancesTab[i], idImages[i]);
-            list.add(p);
-        }
-
-        adapter = new RecyclerPlaneteAdapter(list);
+//
+//        //créer la liste des planètes
+//        ArrayList<Planete> list = new ArrayList<>();
+//        for (int i = 0; i < nomsTab.length ; i++){
+//            Planete p = new Planete(nomsTab[i], distancesTab[i], idImages[i]);
+//            list.add(p);
+//        }
+        adapter =
+                new RecyclerPlaneteAdapter(results);
         //associer adaptateur à ListView
         RecyclerView rv = (RecyclerView)findViewById(R.id.list);
-        //Disposition des elements ...
-        //créer gestionnaire de layout
-        LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        //... basé sur grille
-//        GridLayoutManager llm = new GridLayoutManager(this,2);
+        LinearLayoutManager llm =
+                new LinearLayoutManager(this,
+                        LinearLayoutManager.VERTICAL,
+                        false);
+//        GridLayoutManager llm =
+//                new GridLayoutManager(this,
+//                        2);
         rv.setLayoutManager(llm);//gestionnaire de mise en forme
         rv.setHasFixedSize(true);
         //séparateur
@@ -75,7 +84,17 @@ public class RecyclerViewActivity extends AppCompatActivity {
         rv.setAdapter(adapter);
     }
 
-   //affichage du menu
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
+
+    /**
+     * création de menu
+     * @param menu
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -83,19 +102,14 @@ public class RecyclerViewActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     * création du menu
-//     * @param menu
-     * @return true
-     * */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId(); //retourne id de l'item sélectionné
-        switch (itemId) {
+        int itemId = item.getItemId();//retourne id de l'item qui vient d'çetr activé
+        switch (itemId){
             case R.id.menu_creer:
                 //afficher le formulaire de création de planete
                 Log.d(TAG, "dans menu_creer");
-                Toast.makeText(this,"dans menu_creer",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"dans menu_creer", Toast.LENGTH_LONG).show();
                 //créer un Intent explicite
                 Intent i = new Intent(this, CreerPlaneteActivity.class);
                 startActivityForResult(i, R.id.menu_creer);
@@ -112,8 +126,25 @@ public class RecyclerViewActivity extends AppCompatActivity {
             //récupérer les données envoyées par CreerPlaneteActivity
             final String nomPlanete = data.getStringExtra("nomPlanete");
             final int distancePlanete = data.getIntExtra("distancePlanete", 0);
-            Planete planete = new Planete(nomPlanete, distancePlanete, R.drawable.earth);
-            adapter.addPlanete(planete);
+            int index = (int)(Math.random()*10);
+            final Planete planete = new Planete(nomPlanete, distancePlanete, idImages[index]);
+            realm.executeTransaction(new Realm.Transaction() { // must be in transaction for this to work
+                @Override
+                public void execute(Realm realm) {
+                    // increment index
+                    Number currentIdNum = realm.where(Planete.class).max("id");
+                    int nextId;
+                    if(currentIdNum == null) {
+                        nextId = 1;
+                    } else {
+                        nextId = currentIdNum.intValue() + 1;
+                    }
+                    planete.setId(nextId);
+                    realm.insertOrUpdate(planete); // using insert API
+                }
+            });
+
+            //adapter.addPlanete(planete);
         }
     }
 
@@ -125,23 +156,51 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId(); // recupere id de l'item qui vient d'être activé
+        int itemId = item.getItemId();
         switch (itemId){
             case R.id.menu_modifier:
                 //afficher le formulaire de modification de planete
-                Log.d(TAG, "dans menu_modifier");
-                Toast.makeText(this,"dans menu_modifier",Toast.LENGTH_LONG).show();
+                Log.i(TAG, "dans menu_modifier");
+                Toast.makeText(this,"dans menu_modifier", Toast.LENGTH_LONG).show();
+
                 return false;
             case R.id.menu_supprimer:
                 //demander la confirmation avant de supprimer
-                Log.d(TAG, "dans menu_supprimer");
-                Toast.makeText(this,"dans menu_supprimer",Toast.LENGTH_LONG).show();
-                //récupere la position de l'element qui a étè cliqué
+                Log.i(TAG, "dans menu_supprimer");
+                Toast.makeText(this,
+                        "dans menu_supprimer",
+                        Toast.LENGTH_LONG)
+                        .show();
                 int position = adapter.getClickedPosition();
-                adapter.removePlanete(position); //position de l'element à supprimer
+                adapter.removePlanete(position);
                 return false;
             default:
                 return super.onContextItemSelected(item);
         }
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

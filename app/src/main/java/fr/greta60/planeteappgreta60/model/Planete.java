@@ -1,11 +1,27 @@
 package fr.greta60.planeteappgreta60.model;
 
-public class Planete {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
+
+public class Planete extends RealmObject {
+    //créattion d'entité
+    @PrimaryKey
+    private int id;
+    @Required
     private String nom;
+//    @Required
     private int distance;
+//    @Required
     private int idImage;
 
     //constructeur
+    public Planete() {
+        this.nom = nom;
+        this.distance = distance;
+        this.idImage = idImage;
+    }
+
     public Planete(String nom, int distance, int idImage) {
         this.nom = nom;
         this.distance = distance;
@@ -42,5 +58,13 @@ public class Planete {
     @Override
     public String toString() {
         return getNom();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(int nextId) {
+        this.id = id;
     }
 }
